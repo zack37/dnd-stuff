@@ -5,9 +5,11 @@ import 'source-map-support/register';
 import cluster from 'cluster';
 import os from 'os';
 
+import env from './env';
+
 const numCPUs = os.cpus().length;
 
-if (cluster.isMaster) {
+if (env.self.isClustered && cluster.isMaster) {
   console.log(`Master ${process.pid} is running`);
   let i = 0;
 
