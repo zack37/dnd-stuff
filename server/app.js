@@ -1,115 +1,96 @@
 import Glue from 'glue';
-import hapiRouter from 'hapi-router';
 
 import db from './db';
 import env from './env';
 import pkg from '../package';
+import router from './lib/router';
 
-const apiRoot = '/api/v1';
+// api plugins
+import spellsApi from './plugins/spellsApi';
 
-const router = dirname => {
-  if(!dirname) {
-    throw new Error('dirname must be provided to register routes');
-  }
+const manifest = (router, database) => {
+  const config = {
+    apiRoot: '/api/v1',
+    database,
+    router
+  };
 
   return {
-    register: hapiRouter,
-    options: {
-      routes: 'routes/*.js',
-      cwd: dirname
-    }
+    connections: [
+      { port: env.self.apiPort, labels: ['api', 'spells'] }
+      // { port: 8081, labels: ['web', 'app'] }
+    ],
+
+    registrations: [
+      {
+        plugin: {
+          register: 'good',
+          options: {
+            ops: { interval: 1000 },
+            reporters: {
+              consoleReporter: [
+                {
+                  module: 'good-squeeze',
+                  name: 'Squeeze',
+                  args: [{ log: '*', response: '*', error: '*' }]
+                },
+                {
+                  module: 'good-console'
+                },
+                'stdout'
+              ]
+            }
+          }
+        }
+      },
+      // { plugin: 'blipp' },
+      { plugin: 'inert' },
+      { plugin: 'vision' },
+      {
+        plugin: {
+          register: 'tv',
+          options: {
+            host: 'localhost',
+            endpoint: '/debug'
+          }
+        }
+      },
+      {
+        plugin: {
+          register: 'hapi-swaggered',
+          options: {
+            info: {
+              title: pkg.name,
+              description: pkg.description,
+              version: pkg.version
+            },
+            tagging: {
+              mode: 'tags'
+            }
+          }
+        }
+      },
+      {
+        plugin: {
+          register: 'hapi-swaggered-ui',
+          options: {
+            title: pkg.name,
+            path: '/docs'
+          }
+        }
+      },
+      spellsApi(config)
+    ]
   };
 };
 
-const manifest = (router, database) => ({
-
-  connections: [
-    { port: env.self.apiPort, labels: ['api', 'spells'] }
-    // { port: 8081, labels: ['web', 'app'] }
-  ],
-
-  registrations: [
-    {
-      plugin: {
-        register: 'good',
-        options: {
-          ops: { interval: 1000 },
-          reporters: {
-            consoleReporter: [
-              {
-                module: 'good-squeeze',
-                name: 'Squeeze',
-                args: [{ log: '*', response: '*', error: '*' }]
-              },
-              {
-                module: 'good-console' 
-              },
-              'stdout'
-            ]
-          }
-        }
-      }
-    },
-    // { plugin: 'blipp' },
-    { plugin: 'inert' },
-    { plugin: 'vision' },
-    {
-      plugin: {
-        register: 'tv',
-        options: {
-          host: 'localhost',
-          endpoint: '/debug'
-        }
-      }
-    },
-    {
-      plugin: {
-        register: 'hapi-swaggered',
-        options: {
-          info: {
-            title: pkg.name,
-            description: pkg.description,
-            version: pkg.version
-          },
-          tagging: {
-            mode: 'tags'
-          }
-        }
-      }
-    },
-    {
-      plugin: {
-        register: 'hapi-swaggered-ui',
-        options: {
-          title: pkg.name,
-          path: '/docs'
-          
-        }
-      }
-    },
-    {
-      plugin: {
-        register: './api/spells',
-        options: {
-          routePrefix: `${apiRoot}/spells`,
-          router,
-          database
-        }
-      },
-      options: {
-        select: ['api', 'spells']
-      }
-    }
-  ]
-
-});
 
 const options = {
   relativeTo: __dirname
 };
 
 const tapP = fn => data => {
-  return fn(data).then(() => data);
+  return Promise.resolve().then(() => fn(data)).then(() => data);
 };
 
 export default db(env.mongo.connectionString)
@@ -118,9 +99,9 @@ export default db(env.mongo.connectionString)
   .then(tapP(server => {
     if(env.self.startServer) {
       return server.start()
-        .then(() => server.log(['info'], `Server started on worker ${process.pid}`));
+        .then(() => server.log(['info'], `Server started on worker ${process.pid} at ${server.info.uri}`));
     }
   }))
   .catch(err => {
-    return console.log(err.stack);;
+    return console.log(err.stack);
   });

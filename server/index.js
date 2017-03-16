@@ -1,9 +1,8 @@
-// NOT USED FOR LOCAL DEVELOPMENT. ONLY FOR DEPLOYED INSTANCES
-
 import 'source-map-support/register';
 
 import cluster from 'cluster';
 import os from 'os';
+import R from 'ramda';
 
 import env from './env';
 
@@ -11,11 +10,8 @@ const numCPUs = os.cpus().length;
 
 if (env.self.isClustered && cluster.isMaster) {
   console.log(`Master ${process.pid} is running`);
-  let i = 0;
 
-  for (; i < numCPUs; i++) {
-    cluster.fork();
-  }
+  R.times(cluster.fork, numCPUs);
 
   cluster.on('exit', (worker /*, code, signal*/) => {
     console.log(`worker ${worker.process.pid} died`);

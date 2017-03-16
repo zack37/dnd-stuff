@@ -6,12 +6,10 @@ const plugin = {
       throw new Error('Plugin must be initialized with options');
     }
 
-    const { router, routePrefix, database } = options;
+    const { router, database } = options;
 
     return server
-      .register([router(__dirname)], {
-        routes: { prefix: routePrefix }
-      })
+      .register([router(__dirname)])
       .then(() => db(database))
       .then(next)
       .catch(next);
