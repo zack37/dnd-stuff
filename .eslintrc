@@ -1,0 +1,77 @@
+{
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true
+    }
+  },
+  "plugins": [
+    "fp",
+    "lodash",
+    "mocha",
+    "promise"
+  ],
+  "rules": {
+    "camelcase": 2,
+    "complexity": [ 2, 3 ],
+    "dot-location": [ 2, "property" ],
+    "eol-last": 2,
+    "eqeqeq": [ 2, "smart" ],
+    "indent": [ 2, 2 ],
+    "no-case-declarations": 2,
+    "no-else-return": 2,
+    "no-underscore-dangle": ["error", { allow: ["_id"] }],
+    "no-unused-vars": 2,
+    "no-use-before-define": 2,
+    "space-in-parens": [ 2, "never" ],
+    "object-curly-spacing": [ 2, "always" ],
+    "quotes": [ 2, "single", "avoid-escape" ],
+    "semi": 2,
+    "strict": [ 2, "global" ],
+    "vars-on-top": 2,
+    // fp
+    "fp/no-class": "error",
+    "fp/no-delete": "error",
+    "fp/no-mutating-assign": "error",
+    "fp/no-proxy": "error",
+    "fp/no-this": "error",
+    "fp/no-valueof-field": "error",
+    "no-var": "error",
+    //lodash
+    "lodash/callback-binding": "error",
+    "lodash/chain-style": [ 2, "as-needed" ],
+    "lodash/chaining": [ 2, "always", 3 ],
+    "lodash/collection-method-value": "error",
+    "lodash/collection-return": "error",
+    "lodash/identity-shorthand": "error",
+    "lodash/no-double-unwrap": "error",
+    "lodash/no-extra-args": "error",
+    "lodash/prefer-compact": "error",
+    "lodash/prefer-filter": "error",
+    "lodash/prefer-flat-map": "error",
+    "lodash/prefer-get": "error",
+    "lodash/prefer-includes": "error",
+    "lodash/prefer-is-nil": "error",
+    "lodash/prefer-lodash-chain": "error",
+    "lodash/prefer-map": "error",
+    "lodash/preferred-alias": "error",
+    // mocha
+    "mocha/handle-done-callback": "error",
+    "mocha/max-top-level-suites": [ "error", { "limit": 1 } ],
+    "mocha/no-exclusive-tests": "error",
+    "mocha/no-global-tests": "error",
+    "mocha/no-identical-title": "error",
+    "mocha/no-nested-tests": "error",
+    "mocha/no-return-and-callback": "error",
+    "mocha/no-sibling-hooks": "error",
+    // promise
+    "promise/always-return": "error",
+    "promise/catch-or-return": "error",
+    "promise/no-return-wrap": "error",
+    "promise/param-names": "error"
+  }
+}

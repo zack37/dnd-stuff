@@ -1,0 +1,17 @@
+{
+  "presets": [
+    "babili",
+    [
+      "env",
+      {
+        "targets": {
+          "node": "current"
+        }
+      }
+    ]
+  ],
+  "plugins": [
+    "add-module-exports",
+    ["transform-object-rest-spread", { "useBuiltIns": true }]
+  ]
+}
