@@ -1,8 +1,12 @@
 import { spells } from './db';
 
 function baseQuery(search = {}) {
-  const { page = 0, limit = 100, ...criteria } = search;
-  return spells.find(criteria).skip(page * limit).limit(limit);
+  const { page = 0, limit = 0, ...criteria } = search;
+  let cursor = spells.find(criteria);
+  if(limit > 0) {
+    cursor = cursor.skip(page * limit).limit(limit);
+  }
+  return cursor;
 }
 
 export const count = (search = {}) => {

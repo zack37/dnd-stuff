@@ -1,107 +1,79 @@
 import Glue from 'glue';
+import path from 'path';
+import R from 'ramda';
 
 import db from './db';
 import env from './env';
-import pkg from '../package';
+// this is to avoid importing unnecessary properties in package.json
+import { name, description, version } from '../package';
+import plugins from './plugins';
 import router from './lib/router';
-
-// api plugins
-import spellsApi from './plugins/spellsApi';
 
 const manifest = (router, database) => {
   const config = {
     apiRoot: '/api/v1',
     database,
-    router
+    description,
+    name,
+    router,
+    version
   };
 
   return {
+    server: {
+      connections: {
+        router: {
+          stripTrailingSlash: true
+        },
+        routes: {
+          files: {
+            relativeTo: path.join(__dirname, 'public')
+          }
+        }
+      }
+    },
+
     connections: [
-      { port: env.self.apiPort, labels: ['api', 'spells'] }
+      { port: env.self.apiPort, labels: ['api'] },
       // { port: 8081, labels: ['web', 'app'] }
     ],
 
     registrations: [
-      {
-        plugin: {
-          register: 'good',
-          options: {
-            ops: { interval: 1000 },
-            reporters: {
-              consoleReporter: [
-                {
-                  module: 'good-squeeze',
-                  name: 'Squeeze',
-                  args: [{ log: '*', response: '*', error: '*' }]
-                },
-                {
-                  module: 'good-console'
-                },
-                'stdout'
-              ]
-            }
-          }
-        }
-      },
-      // { plugin: 'blipp' },
-      { plugin: 'inert' },
-      { plugin: 'vision' },
-      {
-        plugin: {
-          register: 'tv',
-          options: {
-            host: 'localhost',
-            endpoint: '/debug'
-          }
-        }
-      },
-      {
-        plugin: {
-          register: 'hapi-swaggered',
-          options: {
-            info: {
-              title: pkg.name,
-              description: pkg.description,
-              version: pkg.version
-            },
-            tagging: {
-              mode: 'tags'
-            }
-          }
-        }
-      },
-      {
-        plugin: {
-          register: 'hapi-swaggered-ui',
-          options: {
-            title: pkg.name,
-            path: '/docs'
-          }
-        }
-      },
-      spellsApi(config)
+      // non-configured, global plugins
+      ...R.map(R.objOf('plugin'), ['inert', 'vision']),
+      // non-clustered plugins 
+      ...env.self.isClustered ? [] : R.map(R.objOf('plugin'), ['blipp']),
+      // clusterd only plugins
+      ...env.self.isClustered ? R.map(R.objOf('plugin'), []) : [],
+      // configured plugins
+      ...R.map(p => p(config), R.values(plugins))
     ]
   };
 };
-
 
 const options = {
   relativeTo: __dirname
 };
 
-const tapP = fn => data => {
-  return Promise.resolve().then(() => fn(data)).then(() => data);
-};
+const tapP = fn =>
+  data => Promise.resolve().then(() => fn(data)).then(() => data);
 
 export default db(env.mongo.connectionString)
-  .then(db => Glue.compose(manifest(router, db), options)) 
+  .then(db => Glue.compose(manifest(router, db), options))
   .then(tapP(server => server.initialize()))
   .then(tapP(server => {
-    if(env.self.startServer) {
-      return server.start()
-        .then(() => server.log(['info'], `Server started on worker ${process.pid} at ${server.info.uri}`));
+    if (env.self.startServer) {
+      return server.start().then(() => {
+        return server.connections.map(con =>
+          server.log(
+            ['info'],
+            `Server started on worker ${process.pid} at ${con.info.uri}`
+          ));
+      });
     }
-  }))
+  })
+  )
   .catch(err => {
-    return console.log(err.stack);
+    console.log(err.stack);
+    return process.exit(1);
   });

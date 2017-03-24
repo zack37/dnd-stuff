@@ -10,5 +10,6 @@ export default mutableFields.requiredKeys(
   'duration',
   'description',
   'classes',
+  'ritual',
   'source'
 );

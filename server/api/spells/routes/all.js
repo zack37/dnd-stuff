@@ -13,15 +13,13 @@ export default {
     validate: {
       query: Joi.object({
         page: Joi.number().min(0).integer().default(0),
-        limit: Joi.number().min(1).integer().default(100)
+        limit: Joi.number().min(0).integer().default(0)
       }).unknown(true)
     }
   },
   handler: (req, reply) => {
     reply(
-      query(req.query)
-        .then(R.map(transforms.dbToRaw))
-        .then(x => ({ spells: x }))
+      query(req.query).then(R.map(transforms.dbToRaw)).then(R.objOf('spells'))
     );
   }
 };

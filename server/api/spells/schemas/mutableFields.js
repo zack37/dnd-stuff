@@ -4,9 +4,7 @@ import componentsSchema from './component';
 import schoolSchema from './school';
 
 export default Joi.object()
-  .meta({
-    className: 'SpellsModel'
-  })
+  .meta({ className: 'SpellsModel' })
   .description(
     'Spells schema model that describes all fields, but does not enforce any requirement constrainsts'
   )
@@ -32,5 +30,7 @@ export default Joi.object()
           'Wizard'
         )
       ),
+    tags: Joi.array().items(Joi.string()),
+    ritual: Joi.boolean().default(false),
     source: Joi.string()
   });

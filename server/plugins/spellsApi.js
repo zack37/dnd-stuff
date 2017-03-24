@@ -4,16 +4,16 @@
  * @param {Object} config.database Initialized database instance
  * @param {String} config.apiRoot Route prefix of api
  */
-export default config => ({
+export default ({ router, database, apiRoot }) => ({
   plugin: {
     register: './api/spells',
     options: {
-      router: config.router,
-      database: config.database
+      router,
+      database
     }
   },
   options: {
     select: ['api', 'spells'],
-    routes: { prefix: `${config.apiRoot}/spells` }
+    routes: { prefix: `${apiRoot}/spells` }
   }
 });

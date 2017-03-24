@@ -3,7 +3,7 @@ import db from './db';
 const plugin = {
   register: (server, options, next) => {
     if (!options) {
-      throw new Error('Plugin must be initialized with options');
+      return next(new Error('Spells plugin must be initialized with options'));
     }
 
     const { router, database } = options;

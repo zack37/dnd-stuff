@@ -8,15 +8,19 @@ import env from './env';
 
 const numCPUs = os.cpus().length;
 
-if (env.self.isClustered && cluster.isMaster) {
-  console.log(`Master ${process.pid} is running`);
+function balance() {
+  if (env.self.isClustered && cluster.isMaster) {
+    console.log(`Master ${process.pid} is running`);
 
-  R.times(cluster.fork, numCPUs);
+    R.times(cluster.fork, numCPUs);
 
-  cluster.on('exit', (worker /*, code, signal*/) => {
-    console.log(`worker ${worker.process.pid} died`);
-    cluster.fork();
-  });
-} else {
-  module.exports = require('./app');
+    cluster.on('exit', (worker /*, code, signal*/) => {
+      console.log(`worker ${worker.process.pid} died`);
+      cluster.fork();
+    });
+  } else {
+    return require('./app');
+  }
 }
+
+module.exports = balance();
