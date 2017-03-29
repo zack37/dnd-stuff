@@ -14,8 +14,10 @@ function balance() {
 
     R.times(cluster.fork, numCPUs);
 
-    cluster.on('exit', (worker /*, code, signal*/) => {
-      console.log(`worker ${worker.process.pid} died`);
+    cluster.on('exit', (worker, code, signal) => {
+      console.log(
+        `worker ${worker.process.pid} died with code: ${code} and signal: ${signal}. Restarting...`
+      );
       cluster.fork();
     });
   } else {
@@ -23,4 +25,4 @@ function balance() {
   }
 }
 
-module.exports = balance();
+export default balance();

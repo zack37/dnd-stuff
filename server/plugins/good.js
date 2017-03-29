@@ -11,7 +11,10 @@ export default () => ({
             args: [{ log: '*', response: '*', error: '*' }]
           },
           {
-            module: 'good-console'
+            module: 'good-console',
+            args: [{
+              format: 'YYYY-MM-DD HH:mm:ss.SSS'
+            }]
           },
           'stdout'
         ]

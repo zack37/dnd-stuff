@@ -2,7 +2,14 @@
 - [x] Set env var for clustering rather than hidden conditional code paths
 - [x] Move all plugins to the server/plugins directory if they have configuration
 - [ ] Add caching in each route handler to get or add resource with a configurable ttl
+- [ ] Add paging to all routes that return an array response
+- [x] Implement query builder to take criteria object and fluidly create set of mongo query objects
+  - [x] Public facing function to take in criteria object
+  - [x] Execution map of propName -> builder
 - [ ] Add tests
   - [ ] Unit
   - [ ] Acceptance
   - [ ] Integration
+- [ ] Add view
+  - [ ] Using inferno
+  - [ ] Implement views for spells read, update, and create

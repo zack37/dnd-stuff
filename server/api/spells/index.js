@@ -1,4 +1,7 @@
+import Promise from 'bluebird';
+
 import db from './db';
+import cacheSetup from './cache';
 
 const plugin = {
   register: (server, options, next) => {
@@ -6,13 +9,16 @@ const plugin = {
       return next(new Error('Spells plugin must be initialized with options'));
     }
 
-    const { router, database } = options;
+    const { cache, database, router } = options;
 
-    return server
-      .register([router(__dirname)])
-      .then(() => db(database))
-      .then(next)
-      .catch(next);
+    // just to wrap it into a bluebird promise for asCallback
+    return Promise.resolve()
+      .then(() => server.register([router(__dirname)]))
+      .then(() => Promise.join(
+        db(database),
+        cacheSetup(cache)
+      ))
+      .asCallback(next);
   }
 };
 

@@ -1,6 +1,7 @@
 {
   "presets": [
     "babili",
+    "@ava/stage-4",
     [
       "env",
       {
@@ -13,5 +14,10 @@
   "plugins": [
     "add-module-exports",
     ["transform-object-rest-spread", { "useBuiltIns": true }]
-  ]
+  ],
+  "ignore": [
+    "server/api/*/test"
+  ],
+  "comments": false,
+  "sourceMaps": "inline"
 }

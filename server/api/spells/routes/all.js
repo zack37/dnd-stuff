@@ -1,8 +1,9 @@
 import Joi from 'joi';
 import R from 'ramda';
 
-import { query } from '../manager';
-import * as transforms from '../transforms';
+import { count, query } from '../manager';
+import { dbToRaw } from '../transforms';
+import responseSchema from '../schemas/response';
 
 export default {
   method: 'GET',
@@ -15,11 +16,20 @@ export default {
         page: Joi.number().min(0).integer().default(0),
         limit: Joi.number().min(0).integer().default(0)
       }).unknown(true)
+    },
+    response: {
+      status: {
+        200: {
+          spells: Joi.array().items(responseSchema),
+          meta: Joi.object().unknown(true)
+        }
+      }
     }
   },
   handler: (req, reply) => {
-    reply(
-      query(req.query).then(R.map(transforms.dbToRaw)).then(R.objOf('spells'))
+    reply.withPaging(
+      query(req.query).then(R.map(dbToRaw)).then(R.objOf('spells')),
+      count(req.query)
     );
   }
 };

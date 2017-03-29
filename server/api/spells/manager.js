@@ -1,9 +1,10 @@
+import queryBuilder from './queryBuilder';
 import { spells } from './db';
 
 function baseQuery(search = {}) {
   const { page = 0, limit = 0, ...criteria } = search;
-  let cursor = spells.find(criteria);
-  if(limit > 0) {
+  let cursor = spells.find(queryBuilder(criteria));
+  if (limit > 0) {
     cursor = cursor.skip(page * limit).limit(limit);
   }
   return cursor;

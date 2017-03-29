@@ -4,18 +4,20 @@
   "description": "Playing around with D&D 5e mechanics using the hapi and mongo ecosystem",
   "main": "build/index.js",
   "scripts": {
-    "build": "babel server/ --out-dir build/ --source-maps inline",
+    "build": "babel server/ --out-dir build/",
+    "ci": "npm run lint && npm run coverage",
+    "coverage": "nyc --require babel-register --reporter=lcov npm test && nyc report",
     "lint": "eslint ./",
-    "start:local": "nodemon index.js --watch server --delay 1",
     "start": "node build/index.js",
-    "test": "mocha test",
-    "test:watch": "npm run test -- --watch --bail --reporter min"
+    "start:local": "nodemon index.js --ignore build --ignore coverage --delay 1",
+    "test": "ava",
+    "test:watch": "npm test -- --watch --fail-fast"
   },
-  "author": "Zack Smith",
-  "license": "MIT",
   "dependencies": {
+    "babel-eslint": "^7.2.1",
     "babel-plugin-add-module-exports": "^0.2.1",
     "blipp": "^2.3.0",
+    "bluebird": "^3.5.0",
     "boom": "^4.2.0",
     "dotenv": "^4.0.0",
     "glue": "^4.1.0",
@@ -27,6 +29,7 @@
     "hapi-swaggered": "^2.9.0",
     "hapi-swaggered-ui": "^2.6.0",
     "inert": "^4.1.0",
+    "ioredis": "^2.5.0",
     "joi": "^10.2.2",
     "mod.js": "^2.0.0",
     "mongodb": "^2.2.24",
@@ -45,10 +48,25 @@
     "babel-register": "^6.23.0",
     "eslint": "^3.17.1",
     "eslint-plugin-fp": "^2.3.0",
-    "eslint-plugin-lodash": "^2.3.5",
-    "eslint-plugin-mocha": "^4.8.0",
     "eslint-plugin-promise": "^3.5.0",
     "nyc": "^10.1.2",
     "sinon": "^2.0.0"
+  },
+  "author": "Zack Smith",
+  "ava": {
+    "files": [
+      "server/api/*/test/**/*-test.js"
+    ],
+    "concurrency": 5,
+    "require": [
+      "babel-register"
+    ]
+  },
+  "bugs": "https://github.com/zack37/dnd-stuff/issues",
+  "homepage": "https://github.com/zack37/dnd-stuff",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:zack37/dnd-stuff.git"
   }
 }

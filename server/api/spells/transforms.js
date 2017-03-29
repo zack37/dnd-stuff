@@ -1,10 +1,16 @@
-import R from 'ramda';
 import shortid from 'shortid';
 
 export function rawToDb(raw) {
-  return Object.assign({}, raw, { _id: shortid.generate() });
+  return {
+    _id: shortid.generate(),
+    ...raw
+  };
 }
 
 export function dbToRaw(db) {
-  return Object.assign({}, R.omit(['_id'], db), { id: db['_id'] });
+  const { _id, ...rest } = db;
+  return {
+    id: _id,
+    ...rest
+  };
 }

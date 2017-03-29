@@ -10,5 +10,9 @@ export default {
   },
   mongo: {
     connectionString: process.env.MONGO_CONNECTION_STRING
+  },
+  redis: {
+    connectionString: process.env.REDIS_CONNECTION_STRING,
+    ttl: process.env.REDIS_TTL
   }
 };

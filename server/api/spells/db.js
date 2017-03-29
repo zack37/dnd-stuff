@@ -1,4 +1,19 @@
-// if moved to own repository, should handle connecting to instance
 export default db => {
-  module.exports.spells = db.collection('spells');
+  const spells = db.collection('spells');
+
+  return spells
+    .createIndexes([
+      {
+        key: { name: 1 },
+        name: 'spells.name_index',
+        unique: true,
+        background: true
+      },
+      {
+        key: { description: 'text' },
+        name: 'spells.text_search_index',
+        background: true
+      }
+    ])
+    .then(() => module.exports.spells = spells);
 };
