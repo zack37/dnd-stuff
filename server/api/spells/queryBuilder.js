@@ -1,22 +1,21 @@
 import R from 'ramda';
 
-const toRegexSearch = R.compose(
-  R.map(item => new RegExp(item, 'i')),
-  R.split(/,\s*/)
-);
+const toRegexSearch = item => new RegExp(item, 'i');
+
+const toRegexSearches = R.compose(R.map(toRegexSearch), R.split(/,\s*/));
 
 const executionMap = {
-  name: name => ({ name: new RegExp(name, 'i') }),
+  name: name => ({ name: toRegexSearch(name) }),
   classes: classes => ({
-    classes: { $in: toRegexSearch(classes) }
+    classes: { $in: toRegexSearches(classes) }
   }),
-  tags: tags => ({ tags: { $in: toRegexSearch(tags) } }),
-  description: description => ({ $text: { $search: description } })
+  tags: tags => ({ tags: { $in: toRegexSearches(tags) } }),
+  description: description => ({ $text: { $search: description } }),
+  schools: schools => ({ school: { $in: toRegexSearches(schools) } })
 };
 
 export default R.compose(
-  R.mergeAll(),
-  R.map(key => executionMap[key](criteria[key])),
-  R.filter(key => R.has(key, criteria)),
-  R.keys()
+  R.reduce((acc, [k, v]) => R.merge(acc, executionMap[k](v)), {}),
+  R.filter(([key]) => R.has(key, executionMap)),
+  R.toPairs()
 );

@@ -1,11 +1,13 @@
 # Things to do
 - [x] Set env var for clustering rather than hidden conditional code paths
 - [x] Move all plugins to the server/plugins directory if they have configuration
-- [ ] Add caching in each route handler to get or add resource with a configurable ttl
-- [ ] Add paging to all routes that return an array response
+- [x] Add caching in each route handler to get or add resource with a configurable ttl
+- [x] Add paging to all routes that return an array response
 - [x] Implement query builder to take criteria object and fluidly create set of mongo query objects
   - [x] Public facing function to take in criteria object
   - [x] Execution map of propName -> builder
+- [ ]Fix startup time. At time of writing, startup takes > 1sec.
+  - Only applicable for "dev" run. Build folder currently takes ~500 msec.
 - [ ] Add tests
   - [ ] Unit
   - [ ] Acceptance
@@ -13,3 +15,4 @@
 - [ ] Add view
   - [ ] Using inferno
   - [ ] Implement views for spells read, update, and create
+  - [ ] Use inferno suite (inferno-router, inferno-redux, inferno-component?)

@@ -30,7 +30,9 @@ const plugin = {
 
         if(query.limit > 0) {
           res.meta.next = buildQsFromObj(nextQuery);
-          res.meta.prev = buildQsFromObj(prevQuery);
+          if(query.page > 0) {
+            res.meta.prev = buildQsFromObj(prevQuery);
+          }
         }
 
         return res;

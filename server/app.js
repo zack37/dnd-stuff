@@ -39,17 +39,17 @@ const manifest = (router, database) => {
     },
 
     connections: [
-      { port: env.self.apiPort, labels: ['api'] },
+      { port: env.self.apiPort, labels: ['api'] }
       // { port: 8081, labels: ['web', 'app'] }
     ],
 
     registrations: [
       // non-configured, global plugins
       ...R.map(R.objOf('plugin'), ['inert', 'vision', './withPaging']),
-      // non-clustered plugins 
-      ...env.self.isClustered ? [] : R.map(R.objOf('plugin'), ['blipp']),
+      // non-clustered plugins
+      ...(env.cluster.enabled ? [] : R.map(R.objOf('plugin'), ['blipp'])),
       // clusterd only plugins
-      ...env.self.isClustered ? R.map(R.objOf('plugin'), []) : [],
+      ...(env.cluster.enabled ? R.map(R.objOf('plugin'), []) : []),
       // configured plugins
       ...R.map(p => p(context), R.values(plugins))
     ]
@@ -67,22 +67,28 @@ const startupTime = process.hrtime();
 export default db(env.mongo.connectionString)
   .then(db => Glue.compose(manifest(router, db), options))
   .then(tapP(server => server.initialize()))
-  .then(tapP(server => {
-    if (env.self.startServer) {
-      return server.start().then(() => {
-        return server.connections.map(con =>
-          server.log(
-            ['info'],
-            `Server started on worker ${process.pid} at ${con.info.uri}`
-          ));
-      });
-    }
-  })
+  .then(
+    tapP(server => {
+      if (env.self.startServer) {
+        return server.start().then(() => {
+          return server.connections.map(con =>
+            server.log(
+              ['info'],
+              `Server started on worker ${process.pid} at ${con.info.uri}`
+            ));
+        });
+      }
+    })
   )
-  .then(tapP(server => {
-    const [s, ns] = process.hrtime(startupTime);
-    server.log(['trace'], `Server took ${(s*1e3 + ns/1e6).toFixed(0)} ms to startup`);
-  }))
+  .then(
+    tapP(server => {
+      const [s, ns] = process.hrtime(startupTime);
+      server.log(
+        ['trace'],
+        `Server took ${s * 1e3 + ns / 1e6 << 0} ms to startup`
+      );
+    })
+  )
   .catch(err => {
     console.log(err.stack);
     return process.exit(1);

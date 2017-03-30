@@ -9,7 +9,7 @@
     "coverage": "nyc --require babel-register --reporter=lcov npm test && nyc report",
     "lint": "eslint ./",
     "start": "node build/index.js",
-    "start:local": "nodemon index.js --ignore build --ignore coverage --delay 1",
+    "start:local": "nodemon index.js --ignore build --ignore coverage --ignore **/*-test.js --delay 1",
     "test": "ava",
     "test:watch": "npm test -- --watch --fail-fast"
   },
@@ -46,6 +46,7 @@
     "babel-preset-babili": "^0.0.12",
     "babel-preset-env": "^1.2.1",
     "babel-register": "^6.23.0",
+    "chai": "^3.5.0",
     "eslint": "^3.17.1",
     "eslint-plugin-fp": "^2.3.0",
     "eslint-plugin-promise": "^3.5.0",
@@ -60,7 +61,8 @@
     "concurrency": 5,
     "require": [
       "babel-register"
-    ]
+    ],
+    "verbose": true
   },
   "bugs": "https://github.com/zack37/dnd-stuff/issues",
   "homepage": "https://github.com/zack37/dnd-stuff",

@@ -3,6 +3,7 @@ import R from 'ramda';
 
 import { count, query } from '../manager';
 import { dbToRaw } from '../transforms';
+import querySchema from '../schemas/query';
 import responseSchema from '../schemas/response';
 
 export default {
@@ -12,10 +13,7 @@ export default {
     description: 'Get all spells',
     tags: ['api', 'spells'],
     validate: {
-      query: Joi.object({
-        page: Joi.number().min(0).integer().default(0),
-        limit: Joi.number().min(0).integer().default(0)
-      }).unknown(true)
+      query: querySchema
     },
     response: {
       status: {
